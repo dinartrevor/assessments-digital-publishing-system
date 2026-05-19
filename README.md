@@ -168,3 +168,65 @@ To test the REST API endpoints directly:
 2.  Configure your environment variable or directly use the collection variables.
 3.  First run the **Login User** request under *Authentication*. This request contains a post-login script that automatically captures the returned JWT token and stores it in your environment.
 4.  Subsequent requests (Me, Refresh, CRUD actions) will automatically attach the correct `Bearer <token>` inside the authorization headers!
+
+---
+
+## 🧪 Backend Testing
+
+This project includes a comprehensive automated test suite for the Laravel API backend, utilizing PHPUnit. The suite consists of properly separated Unit and Feature tests to ensure high-fidelity verification of models, controllers, validations, and the HTTP request lifecycle.
+
+### 🔍 Testing Overview
+*   **Unit Tests**: Verify low-level models, Eloquent attributes, and relationship integrity (e.g., User, Author, Publisher, Book) in isolation.
+*   **Feature Tests**: Boot the full Laravel request lifecycle to test HTTP endpoint security, REST controllers, validation requests, and specific API output payloads.
+
+---
+
+### 📋 Covered Test Cases
+
+#### 🔒 Authentication Flow
+*   **Register**: Successful user registration with payload structure assertions and database presence checks, plus validation constraints (missing fields, weak password, invalid email format).
+*   **Login**: Successful authentication returning JWT payload, and invalid credentials testing (unauthorized 401 handling).
+*   **Logout**: Active token invalidation and verification that subsequent requests with the same token are rejected.
+*   **Security Middleware**: Robust checking that all protected endpoints deny access with 401 Unauthorized status when no valid Bearer token is provided.
+
+#### 📝 Authors CRUD
+*   **Create**: Validating proper resource creation, JSON output matches design system, and validation limits (e.g., today/future date bounds).
+*   **Read**: Retrieving specific authors, validating correct single-model resource wrappers, and 404 response handling.
+*   **Update / Delete**: Validating patch/put updates, record deletion checks (ensuring data is missing from database), and non-existent record checks.
+*   **Validation**: Required payload verification and constraint limits.
+
+#### 🏢 Publishers CRUD
+*   **Create / Read**: Successful creation of business publishers, detailed single view payload mapping, and 404 handling.
+*   **Update / Delete**: E2E updates and record deletion verification.
+*   **Validation**: Input schema constraints validation.
+
+#### 📚 Books CRUD
+*   **Create / Read / Update / Delete**: Comprehensive REST behavior testing for library books.
+*   **Validation**: Negative numbers validation for stock or price attributes, and missing fields blocks.
+*   **Relationship Validation**: Verification that referenced `author_id` and `publisher_id` must exist in the database (otherwise returns 422 with precise validation errors).
+
+#### ⚡ Core API Features
+*   **Pagination**: Checks standard pagination response structure, pagination fields in payload metadata, custom limit bounds (`per_page`), and exact data collection limits.
+*   **Search**: Dynamic debounced textual matching across titles, descriptions, bios, and locations.
+*   **Filtering & Sorting**: Verification of multi-column query-parameter filters and sorting order sequences.
+*   **JSON Response Structure**: Strict format assertions for all resources and collections.
+
+---
+
+### 🏃 Running Tests
+
+Navigate into the `backend` folder:
+```bash
+cd backend
+```
+
+Run all tests:
+```bash
+php artisan test
+```
+
+Run all tests with compact output:
+```bash
+php artisan test --compact
+```
+
